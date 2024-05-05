@@ -1,0 +1,13 @@
+﻿@rendermode InteractiveServer
+@code {
+    [Parameter] public PlayerViewModel? Player { get; set; }
+}
+
+@if (Player is not null)
+{
+    <div class="player">
+        <span class="" style="font-size: 2rem; color: @ColorHelper.GetHex(Player.Color); ">
+            ♟︎
+        </span>
+    </div>
+}

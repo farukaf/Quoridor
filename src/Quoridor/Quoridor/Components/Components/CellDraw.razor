@@ -1,0 +1,30 @@
+﻿@rendermode InteractiveServer
+@code {
+    [Parameter] public CellAddress CellAddress { get; set; } = default!;
+    [Parameter] public RoowViewModel Room { get; set; } = default!;
+
+    protected CellViewModel Cell => Room.Board.Cells[CellAddress];
+    protected string CellName => Room.Board.Cells[CellAddress].ToString();
+    protected PlayerViewModel? CellPlayer => Room.GetPlayer(CellAddress);
+}
+
+<div class="cell-grid">
+    <div class="cell-top">
+        <WallDraw Wall="Cell.TopWall"/>
+    </div>
+    <div class="cell-left"> 
+        <WallDraw Wall="Cell.LeftWall" />
+    </div>
+    <div class="cell-content">
+        <small class="d-block">
+            @CellName
+        </small>
+        <PlayerDraw Player="CellPlayer" />
+    </div>
+    <div class="cell-right">
+        <WallDraw Wall="Cell.RightWall" />
+    </div>
+    <div class="cell-bottom"> 
+        <WallDraw Wall="Cell.BottomWall" />
+    </div>
+</div>

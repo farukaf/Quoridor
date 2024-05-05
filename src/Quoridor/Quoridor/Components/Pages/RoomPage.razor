@@ -1,0 +1,43 @@
+﻿@page "/Room/{id:guid}"
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@inject RoomService _roomService
+
+<PageTitle>Weather</PageTitle>
+
+@code {
+    [Parameter] public Guid Id { get; set; } = default!;
+
+    private bool loading = true;
+    protected RoowViewModel Room { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Room = _roomService.GetRoom(Id);
+        loading = false;
+    }
+}
+
+
+@if (loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            @for (short i = 0; i < Room.Board.RowSize; i++)
+            {
+                <tr>
+                    @for (short j = 0; j < Room.Board.ColumnSize; j++)
+                    {
+                        <td> 
+                            <CellDraw CellAddress="new CellAddress(i, j)" Room="@Room" />
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}

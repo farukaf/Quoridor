@@ -1,0 +1,26 @@
+﻿@rendermode InteractiveServer
+@code {
+    [Parameter] public WallViewModel Wall { get; set; } = default!;
+
+    protected async Task OnClick()
+    {
+        await Wall.Select();
+    }
+
+    protected string GetWallClass()
+    {
+        return Wall.IsSelected ? "wall-selected" : "";
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Wall.SelectedEvent += async (w) => await this.InvokeAsync(StateHasChanged);
+        }
+    }
+}
+
+<button class="@GetWallClass()"
+        @onclick="OnClick">
+</button>

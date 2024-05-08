@@ -1,18 +1,35 @@
-﻿table {
-    width: 100%;
-    border-collapse: collapse;
+﻿.board-grid {
+    display: grid;
+    gap: 0;
+    z-index: 1;
+    width: min-content;
 }
 
-td, th {
-    padding: 0;
-    text-align: center;
-    border: gray 2px solid;
+.grid-item {
 }
 
-td {
-    background-color: #ffffff;
+.cell {
+    /*background: green;*/
+    width: 4rem;
+    height: 4rem;
 }
 
-th {
-    background-color: #f0f0f0;
+.wall {
+    /*background: red;*/
+}
+
+    .wall.vertical {
+        width: 0.7rem;
+        height: 4rem;
+    }
+
+    .wall.horizontal {
+        width: 4rem;
+        height: 0.7rem;
+    }
+
+.corner {
+    /*background: blue;*/
+    width: 0.7rem;
+    height: 0.7rem;
 }

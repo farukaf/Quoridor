@@ -1,0 +1,68 @@
+﻿@using System.Timers
+@implements IDisposable;
+
+<button class="@CssClasses" @onclick="HandleClick" disabled="@Disabled">
+    @ChildContent
+</button>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = builder => { };
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+
+    private string CssClasses => $"{Class} {(isLoading ? "loading" : "")}";
+
+    private bool isLoading = true;
+    private Timer? timer;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+            StartTimer();
+        
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task HandleClick()
+    {
+        if (Disabled)
+            return;
+
+        if (isLoading)
+            return;
+
+        isLoading = true;
+
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(null);
+
+        StartTimer();
+    }
+
+    private void StartTimer()
+    {
+        timer = new Timer(200);
+        timer.Elapsed += async (s, e) => { await TimerElapsed(s, e); };
+        timer.Start();
+    }
+
+    private async Task TimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        isLoading = false;
+        timer?.Stop();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

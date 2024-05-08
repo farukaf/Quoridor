@@ -1,6 +1,6 @@
 ﻿namespace Quoridor.ViewModel;
 
-public record WallViewModel
+public record WallViewModel : GridElementViewModel
 {
     public bool IsPlaced { get; set; } = false;
     public bool CanBePlaced { get; set; } = true;
@@ -8,17 +8,24 @@ public record WallViewModel
     public bool IsDisabled { get => !CanBeSelected; }
     public bool IsSelected { get; set; } = false;
 
-    public event Func<WallViewModel, Task>? SelectedEvent;
-
     public CellAddress? TopCell { get; set; }
     public CellAddress? BottomCell { get; set; }
     public CellAddress? LeftCell { get; set; }
     public CellAddress? RightCell { get; set; }
 
-    public async Task Select()
+    public Direction Direction { get; set; }
+
+    public CornerAddress To { get; set; }
+    public CornerAddress From { get; set; }
+
+    public override string CssClass()
     {
-        IsSelected = true;
-        if (SelectedEvent is not null)
-            await SelectedEvent.Invoke(this);
+        return "wall " + Direction.ToString().ToLower();
     }
+}
+
+public enum Direction
+{
+    Horizontal,
+    Vertical
 }

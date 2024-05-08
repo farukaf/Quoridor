@@ -1,0 +1,15 @@
+﻿
+dialog {
+    color: var(--default);
+    border: 1px solid var(--primary);
+    background: linear-gradient(135deg, var(--item-background) 0%, #000 100%);
+    border-radius: 0.5rem;
+    min-width: 30vw;
+    padding: 1rem 2rem;
+}
+
+
+.dialog-body {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}

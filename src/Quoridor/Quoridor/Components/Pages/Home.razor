@@ -1,11 +1,15 @@
 ﻿@page "/"
 
+@{
+    var gd = "Room/" + Guid.NewGuid();
+}
+
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
-<NavLink class="nav-link" href="Room">
+<NavLink class="nav-link" href="@gd">
     <span class="" aria-hidden="true"></span> Room
 </NavLink>

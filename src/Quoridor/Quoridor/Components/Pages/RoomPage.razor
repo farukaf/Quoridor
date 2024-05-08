@@ -18,26 +18,34 @@
     }
 }
 
-
 @if (loading)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <tbody>
-            @for (short i = 0; i < Room.Board.RowSize; i++)
+    <div class="p-2">
+        <div class="board-grid">
+            @foreach (var gridElem in Room.Board.GridElements)
             {
-                <tr>
-                    @for (short j = 0; j < Room.Board.ColumnSize; j++)
+                var cssCls = gridElem.Value.CssClass();
+                var style = $"grid-row: {gridElem.Key.Row + 1}; grid-column: {gridElem.Key.Column + 1};";
+
+                <div class="grid-item @cssCls" style="@style">
+                    @if (gridElem.Value is CellViewModel cell)
                     {
-                        <td> 
-                            <CellDraw CellAddress="new CellAddress(i, j)" Room="@Room" />
-                        </td>
+                        <CellDraw CellAddress="cell.Address" Room="Room" />
                     }
-                </tr>
+                    else if (gridElem.Value is WallViewModel wall)
+                    {
+                        <WallDraw Wall="wall" />
+                    }
+                    else if (gridElem.Value is CornerViewModel corner)
+                    {
+                        <CornerDraw Corner="corner" />
+                    }
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    </div>
 }

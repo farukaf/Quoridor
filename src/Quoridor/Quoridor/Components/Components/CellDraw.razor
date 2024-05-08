@@ -8,23 +8,9 @@
     protected PlayerViewModel? CellPlayer => Room.GetPlayer(CellAddress);
 }
 
-<div class="cell-grid">
-    <div class="cell-top">
-        <WallDraw Wall="Cell.TopWall"/>
-    </div>
-    <div class="cell-left"> 
-        <WallDraw Wall="Cell.LeftWall" />
-    </div>
-    <div class="cell-content">
-        <small class="d-block">
-            @CellName
-        </small>
-        <PlayerDraw Player="CellPlayer" />
-    </div>
-    <div class="cell-right">
-        <WallDraw Wall="Cell.RightWall" />
-    </div>
-    <div class="cell-bottom"> 
-        <WallDraw Wall="Cell.BottomWall" />
-    </div>
+<div class="text-center p-1 bg-light w-100 h-100">
+    <small class="d-block">
+        @CellName
+    </small>
+    <PlayerDraw Player="CellPlayer" />
 </div>

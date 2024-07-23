@@ -1,0 +1,36 @@
+﻿@attribute [StreamRendering]
+@rendermode InteractiveServer
+@inject IPlayerService playerService
+
+@code {
+    [Parameter]
+    public RoowViewModel Room { get; set; } = default!;
+    protected Player? player;
+
+    protected override bool ShouldRender()
+    {
+        return player is not null;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        player = await playerService.GetPlayer();
+    }
+}
+
+<fieldset>
+    <legend>Players</legend>
+    <ul>
+        @foreach (var _player in Room.GetPlayers())
+        {
+            <li>
+                <small class="pill">@string.Join("|", _player.Tags)</small>
+                @_player.Name
+                @if (player?.Id == _player.Id)
+                {
+                    <small class="pill">YOU</small>
+                }
+            </li>
+        }
+    </ul>
+</fieldset>

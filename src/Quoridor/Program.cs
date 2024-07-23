@@ -1,7 +1,6 @@
 using Blazored.LocalStorage;
 using Quoridor.Services;
 using Quoridor.Components;
-using Quoridor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -76,7 +76,7 @@ public record RoowViewModel
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player2StartPosition;
                 playerViewModel.Color = Color.Red;
-                playerViewModel.Tags = ["Player2"];
+                playerViewModel.Tags = [PlayerViewModel.Player2Tag];
                 Players.Add(playerViewModel.Address, playerViewModel);
             }
             if (Players.Count == 0)
@@ -85,8 +85,9 @@ public record RoowViewModel
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player1StartPosition;
                 playerViewModel.Color = Color.Blue;
-                playerViewModel.Tags = ["Player1"];
+                playerViewModel.Tags = [PlayerViewModel.Player1Tag];
                 Players.Add(playerViewModel.Address, playerViewModel);
+                CurrentPlayer = playerViewModel;
             }
         }
 

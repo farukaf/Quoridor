@@ -15,5 +15,8 @@ public record PlayerViewModel
     public Color Color { get; set; }
     public CellAddress Address { get; set; } = new();
     public string Name { get; set; } = string.Empty;
-    public string[] Tags { get;set; } = new string[0];
+    public string[] Tags { get;set; } = Array.Empty<string>();
+
+    public const string Player1Tag = "Player1";
+    public const string Player2Tag = "Player2";
 }

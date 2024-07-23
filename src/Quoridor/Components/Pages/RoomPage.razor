@@ -31,8 +31,10 @@
         {
             Room = roomService.GetRoom(Id);
             player = await playerService.GetPlayer();
-            if (player is not null)
-                Room.EnterRoom(player);
+            if (player is null)
+                return;
+
+            Room.EnterRoom(player);
             loading = false;
             Room.RoomChanged += RoomChanged_Event;
         }
@@ -66,7 +68,7 @@
     }
 }
 
-<UserBarrierDialog>
+<UserBarrier>
     @if (loading)
     {
         <p><em>Loading...</em></p>
@@ -74,28 +76,9 @@
 
     @if (!loading && Room is not null)
     {
-        <fieldset>
-            <legend>Players</legend>
-            <ul>
-                @foreach (var player in Room.GetPlayers())
-                {
-                    <li>
-                        <small>@string.Join("|", player.Tags)</small>
-                        @player.Name
-                    </li>
-                }
-            </ul>
-        </fieldset>
+        <PlayerBoard Room="Room" />
 
-        <fieldset>
-            <legend>Spectators</legend>
-            <ul>
-                @foreach (var spectator in Room.Spectators.Values)
-                {
-                    <li>@spectator.UserName</li>
-                }
-            </ul>
-        </fieldset>
+        <SpectatorBoard Room="Room" />
 
         <br />
 
@@ -103,4 +86,4 @@
             <BoardDraw Room="Room" />
         </div>
     }
-</UserBarrierDialog>
+</UserBarrier>

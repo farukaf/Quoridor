@@ -13,7 +13,7 @@
     [Parameter] public Guid Id { get; set; } = default!;
 
     private bool loading = true;
-    protected RoowViewModel? Room { get; set; }
+    protected RoomViewModel? Room { get; set; }
     private Player? player;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

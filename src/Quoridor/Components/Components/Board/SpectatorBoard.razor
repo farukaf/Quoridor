@@ -1,12 +1,12 @@
 ﻿@code {
     [Parameter]
-    public RoowViewModel Room { get; set; } = default!;
+    public RoomViewModel Room { get; set; } = default!;
 }
 
 <fieldset>
     <legend>Spectators</legend>
     <ul>
-        @foreach (var spectator in Room.Spectators.Values)
+        @foreach (var spectator in Room.GetSpectators())
         {
             <li>@spectator.UserName</li>
         }

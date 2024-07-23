@@ -1,7 +1,7 @@
 ﻿@rendermode InteractiveServer
 @code {
     [Parameter] public CellAddress CellAddress { get; set; } = default!;
-    [Parameter] public RoowViewModel Room { get; set; } = default!;
+    [Parameter] public RoomViewModel Room { get; set; } = default!;
 
     protected CellViewModel Cell => Room.Board.Cells[CellAddress];
     protected string CellName => Room.Board.Cells[CellAddress].ToString();

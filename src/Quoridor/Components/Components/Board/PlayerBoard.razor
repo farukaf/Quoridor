@@ -4,7 +4,7 @@
 
 @code {
     [Parameter]
-    public RoowViewModel Room { get; set; } = default!;
+    public RoomViewModel Room { get; set; } = default!;
     protected Player? player;
 
     protected override bool ShouldRender()
@@ -21,12 +21,23 @@
 <fieldset>
     <legend>Players</legend>
     <ul>
-        @foreach (var _player in Room.GetPlayers())
+        @if (Room.Player1 is not null)
         {
             <li>
-                <small class="pill">@string.Join("|", _player.Tags)</small>
-                @_player.Name
-                @if (player?.Id == _player.Id)
+                <small class="pill" style="color: @ColorHelper.GetHex(Room.Player1!.Color)">@string.Join("|", Room.Player1!.Tags)</small>
+                @Room.Player1.Name
+                @if (player?.Id == Room.Player1.Id)
+                {
+                    <small class="pill">YOU</small>
+                }
+            </li>
+        }
+        @if (Room.Player2 is not null)
+        {
+            <li>
+                <small class="pill" style="color: @ColorHelper.GetHex(Room.Player2!.Color)">@string.Join("|", Room.Player2!.Tags)</small>
+                @Room.Player2.Name
+                @if (player?.Id == Room.Player2.Id)
                 {
                     <small class="pill">YOU</small>
                 }

@@ -5,21 +5,21 @@ namespace Quoridor.Services;
 
 public interface IRoomService
 {
-    RoowViewModel GetRoom(Guid id);
+    RoomViewModel GetRoom(Guid id);
 }
 
 public class RoomService : IRoomService
 {
-    private ConcurrentDictionary<Guid, RoowViewModel> Rooms { get; set; } = new();
+    private ConcurrentDictionary<Guid, RoomViewModel> Rooms { get; set; } = new();
 
-    private RoowViewModel CreateRoom()
+    private RoomViewModel CreateRoom()
     {
-        var room = new RoowViewModel();
+        var room = new RoomViewModel();
         Rooms.TryAdd(room.Id, room);
         return room;
     }
 
-    public RoowViewModel GetRoom(Guid id)
+    public RoomViewModel GetRoom(Guid id)
     {
         if (Rooms.TryGetValue(id, out var room))
             return room;

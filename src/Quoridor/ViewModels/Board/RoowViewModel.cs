@@ -27,6 +27,12 @@ public record RoowViewModel
         return Players.TryGetValue(address, out var player) ? player : null;
     }
 
+    public IEnumerable<PlayerViewModel> GetPlayers() =>
+        Players.Values;
+
+    public IEnumerable<Player> GetSpectators() =>
+        Spectators.Values;
+
     public KeyValuePair<CellAddress, PlayerViewModel>? GetPlayer(Player player) =>
         Players.FirstOrDefault(p => p.Value.Id == player.Id);
 
@@ -41,10 +47,6 @@ public record RoowViewModel
 
     public void LeaveRoom(Player player)
     {
-        var playerkv = GetPlayer(player);
-        if (playerkv is not null)
-            Players.Remove(playerkv.Value.Key);
-
         Spectators.Remove(player.Id);
         RoomChanged?.Invoke();
     }

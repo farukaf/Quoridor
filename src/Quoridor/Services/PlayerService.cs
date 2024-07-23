@@ -4,7 +4,7 @@ namespace Quoridor.Services;
 
 public interface IPlayerService
 {
-    EventHandler? PlayerChanged { get; set; }
+    Func<Task>? PlayerChanged { get; set; }
     Task<Player?> GetPlayer();
     Task<Player> SetUser(string userName);
 } 
@@ -22,9 +22,9 @@ public class PlayerService(ILocalStorageService localStorage) : IPlayerService
     {
         var player = new Player(Guid.NewGuid(), userName);
         await localStorage.SetItemAsync(USER_KEY, player);
-        PlayerChanged?.Invoke(this, new());
+        PlayerChanged?.Invoke();
         return player;
     }
 
-    public EventHandler? PlayerChanged { get; set; }
+    public Func<Task>? PlayerChanged { get; set; }
 }

@@ -7,31 +7,38 @@
 @inject IPlayerService playerService
 @inject ILogger<RoomPage> logger
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Room @Id</PageTitle>
 
 @code {
     [Parameter] public Guid Id { get; set; } = default!;
 
     private bool loading = true;
-    protected RoowViewModel Room { get; set; } = default!;
+    protected RoowViewModel? Room { get; set; }
+    private Player? player;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
             return;
 
-        Room.RoomChanged += RoomChanged_Event;
+        await EnterRoom();
+        playerService.PlayerChanged += EnterRoom;
+    }
 
+    protected async Task EnterRoom()
+    {
         try
         {
             Room = roomService.GetRoom(Id);
-            var player = await playerService.GetPlayer();
+            player = await playerService.GetPlayer();
             if (player is not null)
                 Room.EnterRoom(player);
             loading = false;
+            Room.RoomChanged += RoomChanged_Event;
         }
         catch (Exception ex)
         {
+            //TODO: Toast this error
             logger.LogError(ex, ex.Message);
             throw;
         }
@@ -46,10 +53,16 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    public async ValueTask DisposeAsync()
-    { 
+    public ValueTask DisposeAsync()
+    {
+        if (Room is null)
+            return ValueTask.CompletedTask;
+
         Room.RoomChanged -= RoomChanged_Event;
-        Room.LeaveRoom(player);
+        if (player is not null)
+            Room.LeaveRoom(player);
+
+        return ValueTask.CompletedTask;
     }
 }
 
@@ -59,12 +72,12 @@
         <p><em>Loading...</em></p>
     }
 
-    @if (!loading)
+    @if (!loading && Room is not null)
     {
         <fieldset>
             <legend>Players</legend>
             <ul>
-                @foreach (var player in Room.Players.Values)
+                @foreach (var player in Room.GetPlayers())
                 {
                     <li>
                         <small>@string.Join("|", player.Tags)</small>

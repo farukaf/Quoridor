@@ -1,4 +1,5 @@
 ﻿@code {
-    [Parameter] public CornerViewModel Corner { get; set; } = default!;
-
+    [Parameter] public CornerViewModel Corner { get; set; } = default!; 
 }
+
+<button type="button" class="text-center @Corner.State.ToString().ToLower()" @onclick="Corner.Click">▼</button>

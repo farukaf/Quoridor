@@ -29,6 +29,7 @@ public record RoomViewModel
 
     public PlayerViewModel? Player1 { get; private set; }
     public PlayerViewModel? Player2 { get; private set; }
+
     public IEnumerable<PlayerViewModel> GetPlayers() =>
         Players.Values;
 
@@ -82,7 +83,6 @@ public record RoomViewModel
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player2StartPosition;
                 playerViewModel.Color = Color.Red;
-                playerViewModel.Tags = [PlayerViewModel.Player2Tag];
                 Players.Add(playerViewModel.Address, playerViewModel);
                 Player2 = playerViewModel;
             }
@@ -92,7 +92,6 @@ public record RoomViewModel
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player1StartPosition;
                 playerViewModel.Color = Color.Blue;
-                playerViewModel.Tags = [PlayerViewModel.Player1Tag];
                 Players.Add(playerViewModel.Address, playerViewModel);
                 CurrentPlayer = playerViewModel;
                 Player1 = playerViewModel;

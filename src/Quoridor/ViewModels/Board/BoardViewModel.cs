@@ -19,6 +19,74 @@ public record BoardViewModel
     public Dictionary<CellAddress, CellViewModel> Cells { get; set; } = new();
     public Dictionary<CornerAddress, CornerViewModel> Corners { get; set; } = new();
 
+    public Func<Task>? BoardChanged { get; set; }
+
+    public async Task CornerClicked(CornerViewModel clickedCorner)
+    {
+        switch (clickedCorner.State)
+        {
+            case CornerState.Enabled:
+                await EnabledCornerClicked(clickedCorner);
+                break;
+            case CornerState.Selected:
+                await SelectedCornerClicked(clickedCorner);
+                break;
+            case CornerState.Disabled:
+                await DisabledCornerClicked(clickedCorner);
+                break;
+            case CornerState.Avaliable:
+                await AvaliableCornerClicked(clickedCorner);
+                break;
+        }
+
+        if (BoardChanged is not null)
+            await BoardChanged.Invoke();
+    }
+
+    private Task EnabledCornerClicked(CornerViewModel clickedCorner)
+    {
+        clickedCorner.State = CornerState.Selected;
+
+        foreach (var corner in Corners.Values)
+        {
+            if (corner == clickedCorner)
+                continue;
+
+            corner.State = CornerState.Disabled;
+
+            if (corner.CornerAddress.X == clickedCorner.CornerAddress.X && corner.CornerAddress.Y == clickedCorner.CornerAddress.Y + 2)
+            {
+                //TODO: Check if colides with a wall
+                corner.State = CornerState.Avaliable;
+                continue;
+            }
+
+            if (corner.CornerAddress.Y == clickedCorner.CornerAddress.Y && corner.CornerAddress.X == clickedCorner.CornerAddress.X + 2)
+            {
+                //TODO: Check if colides with a wall
+                corner.State = CornerState.Avaliable;
+                continue;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task AvaliableCornerClicked(CornerViewModel clickedCorner)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task DisabledCornerClicked(CornerViewModel clickedCorner)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task SelectedCornerClicked(CornerViewModel clickedCorner)
+    {
+        throw new NotImplementedException();
+    }
+
     private void GenerateCells()
     {
         for (short i = 0; i < RowSize; i++)
@@ -50,6 +118,7 @@ public record BoardViewModel
             {
                 var cornerAddress = new CornerAddress { X = i, Y = j };
                 var corner = new CornerViewModel { CornerAddress = cornerAddress };
+                corner.Clicked += CornerClicked;
                 Corners.Add(cornerAddress, corner);
             }
         }

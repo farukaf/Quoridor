@@ -20,17 +20,17 @@
 }
 
     .wall.vertical {
-        width: 0.7rem;
+        width: 1rem;
         height: 4rem;
     }
 
     .wall.horizontal {
         width: 4rem;
-        height: 0.7rem;
+        height: 1rem;
     }
 
 .corner {
     /*background: blue;*/
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 1rem;
+    height: 1rem;
 }

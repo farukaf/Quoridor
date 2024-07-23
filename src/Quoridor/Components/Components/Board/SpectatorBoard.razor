@@ -3,12 +3,15 @@
     public RoomViewModel Room { get; set; } = default!;
 }
 
-<fieldset>
-    <legend>Spectators</legend>
-    <ul>
-        @foreach (var spectator in Room.GetSpectators())
-        {
-            <li>@spectator.UserName</li>
-        }
-    </ul>
-</fieldset>
+@if (Room.GetSpectators().Any())
+{
+    <fieldset>
+        <legend>Spectators</legend>
+        <ul>
+            @foreach (var spectator in Room.GetSpectators())
+            {
+                <li>@spectator.UserName</li>
+            }
+        </ul>
+    </fieldset>
+}

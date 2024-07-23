@@ -23,23 +23,37 @@
     <ul>
         @if (Room.Player1 is not null)
         {
-            <li>
-                <small class="pill" style="color: @ColorHelper.GetHex(Room.Player1!.Color)">@string.Join("|", Room.Player1!.Tags)</small>
-                @Room.Player1.Name
+            <li> 
                 @if (player?.Id == Room.Player1.Id)
                 {
                     <small class="pill">YOU</small>
+                } 
+                @{
+                    var style = $"color: {ColorHelper.GetHex(Room.Player1!.Color)}";
+                }
+                <small class="pill" style="@style">Player 1</small>
+                @Room.Player1.Name
+                @if (Room.CurrentPlayer is not null && Room.CurrentPlayer == Room.Player1)
+                {
+                    <small class="pill">TURN</small>
                 }
             </li>
         }
         @if (Room.Player2 is not null)
         {
             <li>
-                <small class="pill" style="color: @ColorHelper.GetHex(Room.Player2!.Color)">@string.Join("|", Room.Player2!.Tags)</small>
-                @Room.Player2.Name
                 @if (player?.Id == Room.Player2.Id)
                 {
                     <small class="pill">YOU</small>
+                } 
+                @{
+                    var style = $"color: {ColorHelper.GetHex(Room.Player2!.Color)}";
+                }
+                <small class="pill" style="@style">Player 2</small>
+                @Room.Player2.Name
+                @if (Room.CurrentPlayer is not null && Room.CurrentPlayer == Room.Player2)
+                {
+                    <small class="pill">TURN</small>
                 }
             </li>
         }

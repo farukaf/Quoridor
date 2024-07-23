@@ -2,6 +2,30 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+:root {
+    /* Danger Colors */
+    --danger-color: #e74c3c; /* Red */
+    --danger-light: #ec7063; /* Light Red */
+    --danger-dark: #cb4335; /* Dark Red */
+
+    /* Additional Colors */
+    --warning-color: #f1c40f; /* Yellow */
+    --warning-light: #f4d03f; /* Light Yellow */
+    --warning-dark: #d4ac0d; /* Dark Yellow */
+
+    --info-color: #3498db; /* Blue (same as primary) */
+    --info-light: #5dade2; /* Light Blue (same as primary) */
+    --info-dark: #2e86c1; /* Dark Blue (same as primary) */
+
+    --success-color: #2ecc71; /* Green (same as secondary) */
+    --success-light: #58d68d; /* Light Green (same as secondary) */
+    --success-dark: #28b463; /* Dark Green (same as secondary) */
+
+    --light-color: #f8f9fa; /* Light Gray */
+    --dark-color: #343a40; /* Dark Gray */
+    --muted-color: #6c757d; /* Muted Gray */
+}
+
 a, .btn-link {
     color: #006bb7;
 }

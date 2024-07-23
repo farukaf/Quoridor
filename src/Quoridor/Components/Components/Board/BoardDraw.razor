@@ -1,0 +1,30 @@
+﻿@attribute [StreamRendering]
+@rendermode InteractiveServer 
+
+@code {
+    [Parameter]
+    public RoowViewModel Room { get; set; } = default!;
+}
+
+<div class="board-grid">
+    @foreach (var gridElem in Room.Board.GridElements)
+    {
+        var cssCls = gridElem.Value.CssClass();
+        var style = $"grid-row: {gridElem.Key.Row + 1}; grid-column: {gridElem.Key.Column + 1};";
+
+        <div class="grid-item @cssCls" style="@style">
+            @if (gridElem.Value is CellViewModel cell)
+            {
+                <CellDraw CellAddress="cell.Address" Room="Room" />
+            }
+            else if (gridElem.Value is WallViewModel wall)
+            {
+                <WallDraw Wall="wall" />
+            }
+            else if (gridElem.Value is CornerViewModel corner)
+            {
+                <CornerDraw Corner="corner" />
+            }
+        </div>
+    }
+</div> 

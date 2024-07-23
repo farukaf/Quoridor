@@ -1,0 +1,77 @@
+﻿@using Quoridor.Services
+@using Quoridor.Components.Components.Shared
+@using Quoridor.ViewModels.Forms
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@inject IPlayerService playerService
+
+@if (Loading)
+{
+    <i>Loading...</i>
+}
+
+@if (!Loading)
+{
+    @if (barrierActive)
+    {
+        <CustomDialog AutoStart="true" DialogId="@dialogId">
+            <ContentHeader>
+            </ContentHeader>
+            <ContentBody>
+                <h3>What is your name?</h3>
+                <EditForm Model="userNameForm" OnSubmit="@Submit">
+                    <div>
+                        <InputText @bind-Value="userNameForm.UserName" />
+                    </div>
+                    <div>
+                        <button type="submit">Confirm</button>
+                    </div>
+                </EditForm>
+            </ContentBody>
+            <ContentFooter>
+            </ContentFooter>
+        </CustomDialog>
+    }
+
+    @if (!barrierActive)
+    {
+        @ChildContent
+    }
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    string dialogId = "UserBarrier";
+
+    UserNameForm userNameForm = new();
+    Player? player;
+    bool barrierActive = true;
+    bool Loading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (playerService is null)
+                return;
+            player = (await playerService.GetPlayer());
+            userNameForm.UserName = player?.UserName ?? string.Empty;
+            barrierActive = string.IsNullOrWhiteSpace(userNameForm.UserName);
+            Loading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Submit()
+    {
+        if (string.IsNullOrWhiteSpace(userNameForm.UserName))
+            return;
+        await playerService.SetUser(userNameForm.UserName.Trim());
+        barrierActive = false;
+    }
+}

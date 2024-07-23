@@ -1,0 +1,93 @@
+﻿@page "/Room/{id:guid}"
+@using Quoridor.Components.Components.Board
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IRoomService roomService
+@inject IPlayerService playerService
+@inject ILogger<RoomPage> logger
+
+<PageTitle>Weather</PageTitle>
+
+@code {
+    [Parameter] public Guid Id { get; set; } = default!;
+
+    private bool loading = true;
+    protected RoowViewModel Room { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        Room.RoomChanged += RoomChanged_Event;
+
+        try
+        {
+            Room = roomService.GetRoom(Id);
+            var player = await playerService.GetPlayer();
+            if (player is not null)
+                Room.EnterRoom(player);
+            loading = false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw;
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async Task RoomChanged_Event()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    { 
+        Room.RoomChanged -= RoomChanged_Event;
+        Room.LeaveRoom(player);
+    }
+}
+
+<UserBarrierDialog>
+    @if (loading)
+    {
+        <p><em>Loading...</em></p>
+    }
+
+    @if (!loading)
+    {
+        <fieldset>
+            <legend>Players</legend>
+            <ul>
+                @foreach (var player in Room.Players.Values)
+                {
+                    <li>
+                        <small>@string.Join("|", player.Tags)</small>
+                        @player.Name
+                    </li>
+                }
+            </ul>
+        </fieldset>
+
+        <fieldset>
+            <legend>Spectators</legend>
+            <ul>
+                @foreach (var spectator in Room.Spectators.Values)
+                {
+                    <li>@spectator.UserName</li>
+                }
+            </ul>
+        </fieldset>
+
+        <br />
+
+        <div>
+            <BoardDraw Room="Room" />
+        </div>
+    }
+</UserBarrierDialog>

@@ -7,7 +7,7 @@ public record RoomViewModel : IDisposable
 {
     public RoomViewModel()
     {
-        Board = new();
+        Board = new(this);
         Board.WallPlacedEvent += WallPlaced_Event;
     }
 
@@ -40,19 +40,6 @@ public record RoomViewModel : IDisposable
     public KeyValuePair<CellAddress, PlayerViewModel>? GetPlayer(Player player) =>
         Players.FirstOrDefault(p => p.Value.Id == player.Id);
 
-    public void MovePlayer(CellAddress from, CellAddress to)
-    {
-        if (Players.TryGetValue(from, out var player))
-        {
-            if (Players.TryAdd(to, player))
-            {
-                player.Address = to;
-                Players.Remove(from);
-            }
-            RoomChanged?.Invoke();
-        }
-    }
-
     public void LeaveRoom(Player player)
     {
         Spectators.Remove(player.Id);
@@ -69,6 +56,22 @@ public record RoomViewModel : IDisposable
         }
 
         RoomChanged?.Invoke();
+    }
+
+    public Task MoveCurrentPlayer(CellAddress address)
+    {
+        if (Board.CurrentPlayer is null)
+            return Task.CompletedTask;
+
+        Players.Remove(Board.CurrentPlayer.Address);
+        Players.Add(address, Board.CurrentPlayer);
+
+        Board.CurrentPlayer.Address = address;
+
+        ChangePlayerTurn();
+
+        //Board Changed event will update the dom
+        return Task.CompletedTask;
     }
 
     private PlayerViewModel? EnterRoom_GetPlayer(Player player)
@@ -109,15 +112,21 @@ public record RoomViewModel : IDisposable
         if (Board.CurrentPlayer is null)
             return;
 
+        Board.CurrentPlayer = GetOponentFromCurrent();
+    }
+
+    //TODO: Change this when make for more than 2 players
+    private PlayerViewModel? GetOponentFromCurrent()
+    {
         switch (Board.CurrentPlayer)
         {
             case { } player when player == Player1:
-                Board.CurrentPlayer = Player2;
-                break;
+                return Player2;
             case { } player when player == Player2:
-                Board.CurrentPlayer = Player1;
-                break;
+                return Player1;
         }
+
+        return null;
     }
 
     private Task WallPlaced_Event()

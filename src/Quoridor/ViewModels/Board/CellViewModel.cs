@@ -9,6 +9,7 @@ public record CellViewModel : GridElementViewModel
     public WallViewModel RightWall { get; set; } = default!;
     public WallViewModel BottomWall { get; set; } = default!;
     public CellAddress Address { get; set; }
+    public CellState State { get; set; }
 
     public override string CssClass()
     {
@@ -21,4 +22,10 @@ public record CellViewModel : GridElementViewModel
     }
      
     public Func<CellViewModel, Player, Task>? Clicked { get; set; }
+}
+ 
+public enum CellState
+{
+    Clear,
+    AvaliableMove
 }

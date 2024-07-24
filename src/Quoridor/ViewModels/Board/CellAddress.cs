@@ -9,6 +9,11 @@ public record struct CellAddress
         Row = row;
         Column = column;
     }
+    public CellAddress(int row, int column)
+    {
+        Row = (short)row;
+        Column = (short)column;
+    }
     public short Row { get; init; }
     public short Column { get; init; }
 

@@ -16,7 +16,11 @@
     }
 }
 
-<div class="text-center" @onclick="() => CellClicked()">
+<div class="text-center cell" @onclick="() => CellClicked()">
+    @if (Cell.State == CellState.AvaliableMove)
+    {
+        <div class="avaliable"></div>
+    }
     <small class="d-block">
         @CellName
     </small>

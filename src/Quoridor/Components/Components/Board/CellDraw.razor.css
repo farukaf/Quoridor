@@ -6,3 +6,18 @@ div {
     width: 100%;
     height: 100%;
 }
+
+
+.cell {
+    position: relative;
+}
+
+.avaliable {
+    position: absolute;
+    top: 0;
+    margin: 5%;
+    width: 90%;
+    height: 90%;
+    background: rgba(0,0,0,0.4);
+    cursor: pointer;
+}

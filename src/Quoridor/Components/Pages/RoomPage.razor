@@ -37,12 +37,12 @@
             Room.EnterRoom(player);
             loading = false;
             Room.RoomChanged += RoomChanged_Event;
+            Room.Board.BoardChanged += RoomChanged_Event;
         }
         catch (Exception ex)
         {
             //TODO: Toast this error
-            logger.LogError(ex, ex.Message);
-            throw;
+            logger.LogError(ex, ex.Message); 
         }
         finally
         {
@@ -56,10 +56,13 @@
     }
 
     public ValueTask DisposeAsync()
-    {
+    { 
+        playerService.PlayerChanged -= EnterRoom;
+
         if (Room is null)
             return ValueTask.CompletedTask;
 
+        Room.Board.BoardChanged -= RoomChanged_Event;
         Room.RoomChanged -= RoomChanged_Event;
         if (player is not null)
             Room.LeaveRoom(player);

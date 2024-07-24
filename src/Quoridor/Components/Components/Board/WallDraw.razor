@@ -2,3 +2,12 @@
 @code {
     [Parameter] public WallViewModel Wall { get; set; } = default!;
 }
+
+@if (Wall.IsPlaced)
+{
+    <div style="background: red; height: 100%; width: 100%;"></div>
+}
+@if (!Wall.IsPlaced)
+{
+    <div style="background: lightgray; height: 100%; width: 100%;"></div>
+}

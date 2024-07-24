@@ -3,10 +3,6 @@
 public record WallViewModel : GridElementViewModel
 {
     public bool IsPlaced { get; set; } = false;
-    public bool CanBePlaced { get; set; } = true;
-    public bool CanBeSelected { get; set; } = true;
-    public bool IsDisabled { get => !CanBeSelected; }
-    public bool IsSelected { get; set; } = false;
 
     public CellAddress? TopCell { get; set; }
     public CellAddress? BottomCell { get; set; }

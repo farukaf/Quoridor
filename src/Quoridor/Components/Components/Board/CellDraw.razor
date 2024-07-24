@@ -1,14 +1,22 @@
 ﻿@rendermode InteractiveServer
+@inject IPlayerService playerService
 @code {
     [Parameter] public CellAddress CellAddress { get; set; } = default!;
     [Parameter] public RoomViewModel Room { get; set; } = default!;
 
     protected CellViewModel Cell => Room.Board.Cells[CellAddress];
-    protected string CellName => Room.Board.Cells[CellAddress].ToString();
+    protected string CellName => Cell.ToString();
     protected PlayerViewModel? CellPlayer => Room.GetPlayer(CellAddress);
+    private Player? player;
+    protected async Task CellClicked()
+    {
+        player ??= await playerService.GetPlayer();
+        if (Cell?.Clicked is not null && player is not null)
+            await Cell.Clicked.Invoke(Cell, player);
+    }
 }
 
-<div class="text-center p-1 bg-light w-100 h-100">
+<div class="text-center" @onclick="() => CellClicked()">
     <small class="d-block">
         @CellName
     </small>

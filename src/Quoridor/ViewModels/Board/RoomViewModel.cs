@@ -21,8 +21,6 @@ public record RoomViewModel : IDisposable
 
     public Dictionary<Guid, Player> Spectators { get; set; } = new();
 
-    public PlayerViewModel? CurrentPlayer { get; set; }
-
     public BoardViewModel Board { get; set; }
 
     public PlayerViewModel? GetPlayer(CellAddress address)
@@ -98,7 +96,7 @@ public record RoomViewModel : IDisposable
                 playerViewModel.Color = Color.Blue;
                 playerViewModel.WallCount = Configuration.WallsPerPlayer;
                 Players.Add(playerViewModel.Address, playerViewModel);
-                CurrentPlayer = playerViewModel;
+                Board.CurrentPlayer = playerViewModel;
                 Player1 = playerViewModel;
             }
         }
@@ -108,26 +106,26 @@ public record RoomViewModel : IDisposable
 
     private void ChangePlayerTurn()
     {
-        if (CurrentPlayer is null)
+        if (Board.CurrentPlayer is null)
             return;
 
-        switch (CurrentPlayer)
+        switch (Board.CurrentPlayer)
         {
             case { } player when player == Player1:
-                CurrentPlayer = Player2;
+                Board.CurrentPlayer = Player2;
                 break;
             case { } player when player == Player2:
-                CurrentPlayer = Player1;
+                Board.CurrentPlayer = Player1;
                 break;
         }
     }
 
     private Task WallPlaced_Event()
     {
-        if (CurrentPlayer is null)
+        if (Board.CurrentPlayer is null)
             return Task.CompletedTask;
 
-        CurrentPlayer.WallCount--;
+        Board.CurrentPlayer.WallCount--;
         ChangePlayerTurn();
 
         return Task.CompletedTask;

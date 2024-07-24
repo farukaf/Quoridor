@@ -1,4 +1,6 @@
-﻿namespace Quoridor.ViewModels.Board;
+﻿using Quoridor.Services;
+
+namespace Quoridor.ViewModels.Board;
 
 public record CellViewModel : GridElementViewModel
 {
@@ -17,5 +19,6 @@ public record CellViewModel : GridElementViewModel
     {
         return $"(r{Address.Row},c{Address.Column})";
     }
-
+     
+    public Func<CellViewModel, Player, Task>? Clicked { get; set; }
 }

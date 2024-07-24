@@ -29,7 +29,7 @@
                 }
                 <small class="pill" style="@style">Player 1</small>
                 @Room.Player1.Name
-                @if (Room.CurrentPlayer is not null && Room.CurrentPlayer == Room.Player1)
+                @if (Room.Board.CurrentPlayer is not null && Room.Board.CurrentPlayer == Room.Player1)
                 {
                     <small class="pill">TURN</small>
                 }
@@ -54,7 +54,7 @@
                 }
                 <small class="pill" style="@style">Player 2</small>
                 @Room.Player2.Name
-                @if (Room.CurrentPlayer is not null && Room.CurrentPlayer == Room.Player2)
+                @if (Room.Board.CurrentPlayer is not null && Room.Board.CurrentPlayer == Room.Player2)
                 {
                     <small class="pill">TURN</small>
                 }

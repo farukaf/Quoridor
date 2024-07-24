@@ -1,6 +1,8 @@
-﻿namespace Quoridor.ViewModels.Board;
+﻿using Quoridor.Services;
 
-public record BoardViewModel: IDisposable
+namespace Quoridor.ViewModels.Board;
+
+public record BoardViewModel : IDisposable
 {
     public BoardViewModel()
     {
@@ -12,6 +14,7 @@ public record BoardViewModel: IDisposable
         GenerateGridAddress();
     }
 
+    public PlayerViewModel? CurrentPlayer { get; set; }
     public short RowSize { get; set; }
     public short ColumnSize { get; set; }
     private List<WallViewModel> Walls { get; set; } = new();
@@ -42,6 +45,13 @@ public record BoardViewModel: IDisposable
 
         if (BoardChanged is not null)
             await BoardChanged.Invoke();
+    }
+
+
+    public Task CellClicked(CellViewModel cell, Player player)
+    {
+        Console.WriteLine($"Cell: {cell} ThisPlayer: {player.Id == CurrentPlayer?.Id}");
+        return Task.CompletedTask;
     }
 
     private Task EnabledCornerClicked(CornerViewModel clickedCorner)
@@ -95,7 +105,7 @@ public record BoardViewModel: IDisposable
 
         //WallPlacedEvent
         if (WallPlacedEvent is not null)
-            await WallPlacedEvent.Invoke(); 
+            await WallPlacedEvent.Invoke();
     }
 
     private (IEnumerable<CornerViewModel> corners, WallViewModel wall1, WallViewModel wall2) GetWallsFromCorners(CornerViewModel corner1, CornerViewModel corner2)
@@ -157,6 +167,7 @@ public record BoardViewModel: IDisposable
                     RightWall = Walls.Single(w => w.LeftCell == cellAddress),
                     BottomWall = Walls.Single(w => w.TopCell == cellAddress),
                 };
+                cell.Clicked += CellClicked;
                 Cells.Add(cellAddress, cell);
             }
         }

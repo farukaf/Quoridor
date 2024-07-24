@@ -7,7 +7,7 @@
 
     protected bool MissingPlayers => Room.Player1 is null || Room.Player2 is null;
     protected bool PlayerIsMissing => player is null;
-    protected bool NotYourTurn => Room.CurrentPlayer is not null && player is not null && Room.CurrentPlayer.Id != player.Id;
+    protected bool NotYourTurn => Room.Board.CurrentPlayer is not null && player is not null && Room.Board.CurrentPlayer.Id != player.Id;
     protected bool ShouldShow => MissingPlayers || PlayerIsMissing || NotYourTurn;
 
 

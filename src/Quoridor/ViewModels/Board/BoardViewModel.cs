@@ -1,6 +1,6 @@
 ﻿namespace Quoridor.ViewModels.Board;
 
-public record BoardViewModel
+public record BoardViewModel: IDisposable
 {
     public BoardViewModel()
     {
@@ -20,6 +20,7 @@ public record BoardViewModel
     public Dictionary<CornerAddress, CornerViewModel> Corners { get; set; } = new();
 
     public Func<Task>? BoardChanged { get; set; }
+    public Func<Task>? WallPlacedEvent { get; set; }
 
     public async Task CornerClicked(CornerViewModel clickedCorner)
     {
@@ -77,11 +78,11 @@ public record BoardViewModel
         return Task.CompletedTask;
     }
 
-    private Task AvaliableCornerClicked(CornerViewModel clickedCorner)
+    private async Task AvaliableCornerClicked(CornerViewModel clickedCorner)
     {
         var selectedCorner = Corners.Values.First(c => c.State == CornerState.Selected);
 
-        (var corners, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, selectedCorner);
+        (_, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, selectedCorner);
 
         wall1.IsPlaced = true;
         wall2.IsPlaced = true;
@@ -92,7 +93,9 @@ public record BoardViewModel
             corner.State = CornerState.Enabled;
         }
 
-        return Task.CompletedTask;
+        //WallPlacedEvent
+        if (WallPlacedEvent is not null)
+            await WallPlacedEvent.Invoke(); 
     }
 
     private (IEnumerable<CornerViewModel> corners, WallViewModel wall1, WallViewModel wall2) GetWallsFromCorners(CornerViewModel corner1, CornerViewModel corner2)
@@ -115,7 +118,7 @@ public record BoardViewModel
             .Where(x => x is not null)
             .OrderBy(x => x.CornerAddress.X)
             .ThenBy(x => x.CornerAddress.Y);
-         
+
         var wall1 = Walls.Single(w => w.From == corners.First().CornerAddress && w.To == corners.ElementAt(1).CornerAddress);
         var wall2 = Walls.Single(w => w.From == corners.ElementAt(1).CornerAddress && w.To == corners.Last().CornerAddress);
 
@@ -260,7 +263,7 @@ public record BoardViewModel
                 var gridAddress = new GridAddress(i, j);
                 //even column and even row: corner 
                 if (j % 2 == 0 && i % 2 == 0)
-                { 
+                {
                     continue;
                 }
 
@@ -294,10 +297,12 @@ public record BoardViewModel
                     GridElements.Add(gridAddress, wall);
 
                     //resolve corners
-                    var cornerAddressFrom = gridAddress with { 
+                    var cornerAddressFrom = gridAddress with
+                    {
                         Column = (short)(gridAddress.Column - 1)
                     };
-                    var cornerAddressTo = gridAddress with { 
+                    var cornerAddressTo = gridAddress with
+                    {
                         Column = (short)(gridAddress.Column + 1)
                     };
 
@@ -347,5 +352,17 @@ public record BoardViewModel
                 }
             }
         }
+    }
+
+    public void Dispose()
+    {
+        Walls.Clear();
+        Walls.TrimExcess();
+        GridElements.Clear();
+        GridElements.TrimExcess();
+        Cells.Clear();
+        Cells.TrimExcess();
+        Corners.Clear();
+        Corners.TrimExcess();
     }
 }

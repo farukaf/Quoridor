@@ -3,8 +3,14 @@ using Quoridor.Services;
 
 namespace Quoridor.ViewModels.Board;
 
-public record RoomViewModel
-{ 
+public record RoomViewModel : IDisposable
+{
+    public RoomViewModel()
+    {
+        Board = new();
+        Board.WallPlacedEvent += WallPlaced_Event;
+    }
+
     public Func<Task>? RoomChanged { get; set; }
 
     public Guid Id { get; internal set; } = Guid.NewGuid();
@@ -17,7 +23,7 @@ public record RoomViewModel
 
     public PlayerViewModel? CurrentPlayer { get; set; }
 
-    public BoardViewModel Board { get; set; } = new();
+    public BoardViewModel Board { get; set; }
 
     public PlayerViewModel? GetPlayer(CellAddress address)
     {
@@ -40,7 +46,7 @@ public record RoomViewModel
     {
         if (Players.TryGetValue(from, out var player))
         {
-            if(Players.TryAdd(to, player))
+            if (Players.TryAdd(to, player))
             {
                 player.Address = to;
                 Players.Remove(from);
@@ -98,5 +104,41 @@ public record RoomViewModel
         }
 
         return playerViewModel;
+    }
+
+    private void ChangePlayerTurn()
+    {
+        if (CurrentPlayer is null)
+            return;
+
+        switch (CurrentPlayer)
+        {
+            case { } player when player == Player1:
+                CurrentPlayer = Player2;
+                break;
+            case { } player when player == Player2:
+                CurrentPlayer = Player1;
+                break;
+        }
+    }
+
+    private Task WallPlaced_Event()
+    {
+        if (CurrentPlayer is null)
+            return Task.CompletedTask;
+
+        CurrentPlayer.WallCount--;
+        ChangePlayerTurn();
+
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Board.WallPlacedEvent -= WallPlaced_Event;
+        Players?.Clear();
+        Players?.TrimExcess();
+        Spectators?.Clear();
+        Spectators?.TrimExcess();
     }
 }

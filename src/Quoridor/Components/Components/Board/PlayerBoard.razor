@@ -24,12 +24,8 @@
         @if (Room.Player1 is not null)
         {
             <li> 
-                @if (player?.Id == Room.Player1.Id)
-                {
-                    <small class="pill">YOU</small>
-                } 
                 @{
-                    var style = $"color: {ColorHelper.GetHex(Room.Player1!.Color)}";
+                    var style = $"color: {ColorHelper.GetHex(Room.Player1.Color)}";
                 }
                 <small class="pill" style="@style">Player 1</small>
                 @Room.Player1.Name
@@ -37,17 +33,24 @@
                 {
                     <small class="pill">TURN</small>
                 }
+                <ul>
+                    @if (player?.Id == Room.Player1.Id)
+                    {
+                        <li>
+                            <small class="pill">YOU</small>
+                        </li>
+                    }
+                    <li>
+                        Walls: @Room.Player1.WallCount
+                    </li>
+                </ul>
             </li>
-        }
+        }   
         @if (Room.Player2 is not null)
         {
             <li>
-                @if (player?.Id == Room.Player2.Id)
-                {
-                    <small class="pill">YOU</small>
-                } 
                 @{
-                    var style = $"color: {ColorHelper.GetHex(Room.Player2!.Color)}";
+                    var style = $"color: {ColorHelper.GetHex(Room.Player2.Color)}";
                 }
                 <small class="pill" style="@style">Player 2</small>
                 @Room.Player2.Name
@@ -55,6 +58,17 @@
                 {
                     <small class="pill">TURN</small>
                 }
+                <ul>
+                    @if (player?.Id == Room.Player2.Id)
+                    {
+                        <li>
+                            <small class="pill">YOU</small>
+                        </li>
+                    }
+                    <li>
+                        Walls: @Room.Player2.WallCount
+                    </li>
+                </ul>
             </li>
         }
     </ul>

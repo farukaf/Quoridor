@@ -4,15 +4,12 @@ using Quoridor.Services;
 namespace Quoridor.ViewModels.Board;
 
 public record RoomViewModel
-{
-    public RoomViewModel()
-    {
-        Id = Guid.NewGuid();
-    }
-
+{ 
     public Func<Task>? RoomChanged { get; set; }
 
-    public Guid Id { get; internal set; }
+    public Guid Id { get; internal set; } = Guid.NewGuid();
+
+    public RoomConfigurationViewModel Configuration { get; set; } = new();
 
     public Dictionary<CellAddress, PlayerViewModel> Players { get; set; } = new();
 
@@ -83,6 +80,7 @@ public record RoomViewModel
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player2StartPosition;
                 playerViewModel.Color = Color.Red;
+                playerViewModel.WallCount = Configuration.WallsPerPlayer;
                 Players.Add(playerViewModel.Address, playerViewModel);
                 Player2 = playerViewModel;
             }
@@ -92,6 +90,7 @@ public record RoomViewModel
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player1StartPosition;
                 playerViewModel.Color = Color.Blue;
+                playerViewModel.WallCount = Configuration.WallsPerPlayer;
                 Players.Add(playerViewModel.Address, playerViewModel);
                 CurrentPlayer = playerViewModel;
                 Player1 = playerViewModel;

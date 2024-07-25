@@ -28,6 +28,11 @@ public record BoardViewModel : IDisposable
     public Func<Task>? BoardChanged { get; set; }
     public Func<Task>? WallPlacedEvent { get; set; }
 
+    public CellViewModel? GetCell(CellAddress address)
+    {
+        return Cells.TryGetValue(address, out var cell) ? cell : null;
+    }
+
     #region CornerClick_Management
     public async Task CornerClicked(CornerViewModel clickedCorner)
     {
@@ -49,60 +54,6 @@ public record BoardViewModel : IDisposable
 
         if (BoardChanged is not null)
             await BoardChanged.Invoke();
-    }
-
-    private Task EnabledCornerClicked(CornerViewModel clickedCorner)
-    {
-        var avaliable = 0;
-        clickedCorner.State = CornerState.Selected;
-        foreach (var corner in Corners.Values)
-        {
-            if (corner == clickedCorner)
-                continue;
-
-            corner.State = CornerState.Disabled;
-
-            if ((corner.CornerAddress.X == clickedCorner.CornerAddress.X && corner.CornerAddress.Y == clickedCorner.CornerAddress.Y + 2) ||
-                (corner.CornerAddress.Y == clickedCorner.CornerAddress.Y && corner.CornerAddress.X == clickedCorner.CornerAddress.X + 2) ||
-                (corner.CornerAddress.X == clickedCorner.CornerAddress.X && corner.CornerAddress.Y == clickedCorner.CornerAddress.Y - 2) ||
-                (corner.CornerAddress.Y == clickedCorner.CornerAddress.Y && corner.CornerAddress.X == clickedCorner.CornerAddress.X - 2))
-            {
-                (_, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, corner);
-                if (wall1.IsPlaced || wall2.IsPlaced)
-                    continue;
-                corner.State = CornerState.Avaliable;
-                avaliable++;
-                continue;
-            }
-        }
-
-        if (avaliable == 0)
-        {
-            foreach (var corner in Corners.Values)
-                corner.State = CornerState.Enabled;
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private async Task AvaliableCornerClicked(CornerViewModel clickedCorner)
-    {
-        var selectedCorner = Corners.Values.First(c => c.State == CornerState.Selected);
-
-        (_, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, selectedCorner);
-
-        wall1.IsPlaced = true;
-        wall2.IsPlaced = true;
-
-        //Reset the corners
-        foreach (var corner in Corners.Values)
-        {
-            corner.State = CornerState.Enabled;
-        }
-
-        //WallPlacedEvent
-        if (WallPlacedEvent is not null)
-            await WallPlacedEvent.Invoke();
     }
 
     private (IEnumerable<CornerViewModel> corners, WallViewModel wall1, WallViewModel wall2) GetWallsFromCorners(CornerViewModel corner1, CornerViewModel corner2)
@@ -146,6 +97,63 @@ public record BoardViewModel : IDisposable
         }
 
         return Task.CompletedTask;
+    }
+
+    private Task EnabledCornerClicked(CornerViewModel clickedCorner)
+    {
+        var currentPlayerWallCount = CurrentPlayer?.WallCount ?? 0;
+        if (currentPlayerWallCount <= 0)
+            return Task.CompletedTask;
+
+        var avaliable = 0;
+        clickedCorner.State = CornerState.Selected;
+        foreach (var corner in Corners.Values)
+        {
+            if (corner == clickedCorner)
+                continue;
+
+            corner.State = CornerState.Disabled;
+
+            if ((corner.CornerAddress.X == clickedCorner.CornerAddress.X && corner.CornerAddress.Y == clickedCorner.CornerAddress.Y + 2) ||
+                (corner.CornerAddress.Y == clickedCorner.CornerAddress.Y && corner.CornerAddress.X == clickedCorner.CornerAddress.X + 2) ||
+                (corner.CornerAddress.X == clickedCorner.CornerAddress.X && corner.CornerAddress.Y == clickedCorner.CornerAddress.Y - 2) ||
+                (corner.CornerAddress.Y == clickedCorner.CornerAddress.Y && corner.CornerAddress.X == clickedCorner.CornerAddress.X - 2))
+            {
+                (_, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, corner);
+                if (wall1.IsPlaced || wall2.IsPlaced)
+                    continue;
+                corner.State = CornerState.Avaliable;
+                avaliable++;
+                continue;
+            }
+        }
+
+        if (avaliable == 0)
+        {
+            foreach (var corner in Corners.Values)
+                corner.State = CornerState.Enabled;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task AvaliableCornerClicked(CornerViewModel clickedCorner)
+    {
+        var selectedCorner = Corners.Values.First(c => c.State == CornerState.Selected);
+
+        (_, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, selectedCorner);
+
+        wall1.IsPlaced = true;
+        wall2.IsPlaced = true;
+
+        //Reset the corners
+        foreach (var corner in Corners.Values)
+            corner.State = CornerState.Enabled;
+       
+
+        //WallPlacedEvent
+        if (WallPlacedEvent is not null)
+            await WallPlacedEvent.Invoke();
     }
 
     #endregion
@@ -271,10 +279,10 @@ public record BoardViewModel : IDisposable
                 };
 
                 cell.Clicked += CellClicked;
-                 
-                if(CellAddress.Player1VictoryCells.Contains(new(i,j)))
+
+                if (CellAddress.Player1VictoryCells.Contains(new(i, j)))
                     cell.VictoryCondition.PlayerColors.Add(ColorHelper.Player1Color);
-                if(CellAddress.Player2VictoryCells.Contains(new(i,j)))
+                if (CellAddress.Player2VictoryCells.Contains(new(i, j)))
                     cell.VictoryCondition.PlayerColors.Add(ColorHelper.Player2Color);
 
                 Cells.Add(cellAddress, cell);
@@ -484,5 +492,18 @@ public record BoardViewModel : IDisposable
         Cells.TrimExcess();
         Corners.Clear();
         Corners.TrimExcess();
+    }
+
+    public void Reset()
+    {
+        //Reset the corners
+        foreach (var corner in Corners.Values)
+            corner.State = CornerState.Enabled;
+        
+        foreach(var cell in Cells.Values)
+            cell.State = CellState.Clear;
+
+        foreach (var wall in Walls)
+            wall.IsPlaced = false;
     }
 }

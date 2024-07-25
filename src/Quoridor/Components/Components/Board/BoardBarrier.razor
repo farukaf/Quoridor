@@ -10,7 +10,6 @@
     protected bool NotYourTurn => Room.Board.CurrentPlayer is not null && player is not null && Room.Board.CurrentPlayer.Id != player.Id;
     protected bool ShouldShow => MissingPlayers || PlayerIsMissing || NotYourTurn;
 
-
     protected override async Task OnInitializedAsync()
     {
         player ??= await playerService.GetPlayer();

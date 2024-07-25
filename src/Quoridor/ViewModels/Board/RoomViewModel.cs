@@ -7,8 +7,7 @@ public record RoomViewModel : IDisposable
 {
     public RoomViewModel()
     {
-        Board = new(this);
-        Board.WallPlacedEvent += WallPlaced_Event;
+        Board = CreateBoard();
     }
 
     public Func<Task>? RoomChanged { get; set; }
@@ -105,6 +104,19 @@ public record RoomViewModel : IDisposable
         }
 
         return playerViewModel;
+    }
+
+    private void ResetBoard()
+    {
+        Board = CreateBoard();
+        Board.CurrentPlayer = Player1; 
+    }
+
+    private BoardViewModel CreateBoard()
+    {
+        var board = new BoardViewModel(this);
+        board.WallPlacedEvent += WallPlaced_Event;
+        return board;
     }
 
     private void ChangePlayerTurn()

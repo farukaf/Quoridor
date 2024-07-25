@@ -146,7 +146,7 @@ public record BoardViewModel : IDisposable
 
     private bool WillBlockPlayer(CornerViewModel clickedCorner, CornerViewModel corner, IEnumerable<CornerViewModel> corners, WallViewModel wall1, WallViewModel wall2)
     {
-        // Simulate placing the walls
+        // Simulate placing the walls to the simplify the latter algorithm
         wall1.IsPlaced = true;
         wall2.IsPlaced = true;
 
@@ -164,6 +164,11 @@ public record BoardViewModel : IDisposable
     Queue<CellAddress> _isPlayerBlockedQueue = new Queue<CellAddress>();
     HashSet<CellAddress> _isPlayerBlockedVisited = new HashSet<CellAddress>();
 
+    /// <summary>
+    /// This uses a breadth-first search (BFS) to determine if a player can reach any of their victory cells
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
     private bool IsPlayerBlocked(PlayerViewModel? player)
     {
         if (player == null)
@@ -227,7 +232,6 @@ public record BoardViewModel : IDisposable
         //Reset the corners
         foreach (var corner in Corners.Values)
             corner.State = CornerState.Enabled;
-
 
         //WallPlacedEvent
         if (WallPlacedEvent is not null)

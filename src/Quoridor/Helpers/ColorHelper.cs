@@ -11,6 +11,9 @@ public static class ColorHelper
             _ => throw new ArgumentOutOfRangeException(nameof(color), color, null)
         };
     }
+
+    public const Color Player1Color = Color.Blue;
+    public const Color Player2Color = Color.Red;
 }
 
 public enum Color

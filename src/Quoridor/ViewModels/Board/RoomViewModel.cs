@@ -9,12 +9,17 @@ public record RoomViewModel : IDisposable
     {
         Board = CreateBoard();
     }
-
+     
     public Func<Task>? RoomChanged { get; set; }
 
     public Guid Id { get; internal set; } = Guid.NewGuid();
 
     public RoomConfigurationViewModel Configuration { get; set; } = new();
+
+    public List<Victory> Victories { get; set; } = new();
+
+    public PlayerViewModel? Player1 { get; private set; }
+    public PlayerViewModel? Player2 { get; private set; }
 
     public Dictionary<CellAddress, PlayerViewModel> Players { get; set; } = new();
 
@@ -27,8 +32,6 @@ public record RoomViewModel : IDisposable
         return Players.TryGetValue(address, out var player) ? player : null;
     }
 
-    public PlayerViewModel? Player1 { get; private set; }
-    public PlayerViewModel? Player2 { get; private set; }
 
     public IEnumerable<PlayerViewModel> GetPlayers() =>
         Players.Values;
@@ -85,7 +88,7 @@ public record RoomViewModel : IDisposable
                 //Add Player 2
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player2StartPosition;
-                playerViewModel.Color = Color.Red;
+                playerViewModel.Color = ColorHelper.Player2Color;
                 playerViewModel.WallCount = Configuration.WallsPerPlayer;
                 Players.Add(playerViewModel.Address, playerViewModel);
                 Player2 = playerViewModel;
@@ -95,7 +98,7 @@ public record RoomViewModel : IDisposable
                 //Add Player 1 
                 playerViewModel = new PlayerViewModel(player);
                 playerViewModel.Address = CellAddress.Player1StartPosition;
-                playerViewModel.Color = Color.Blue;
+                playerViewModel.Color = ColorHelper.Player1Color;
                 playerViewModel.WallCount = Configuration.WallsPerPlayer;
                 Players.Add(playerViewModel.Address, playerViewModel);
                 Board.CurrentPlayer = playerViewModel;

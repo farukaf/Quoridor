@@ -17,7 +17,4 @@ public record PlayerViewModel
     public string Name { get; set; } = string.Empty;
     public string[] Tags { get;set; } = Array.Empty<string>();
     public int WallCount { get; internal set; }
-
-    public const string Player1Tag = "Player1";
-    public const string Player2Tag = "Player2";
 }

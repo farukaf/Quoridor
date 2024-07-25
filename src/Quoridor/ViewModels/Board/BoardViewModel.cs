@@ -1,4 +1,5 @@
-﻿using Quoridor.Services;
+﻿using Quoridor.Helper;
+using Quoridor.Services;
 
 namespace Quoridor.ViewModels.Board;
 
@@ -266,8 +267,16 @@ public record BoardViewModel : IDisposable
                     LeftWall = Walls.Single(w => w.RightCell == cellAddress),
                     RightWall = Walls.Single(w => w.LeftCell == cellAddress),
                     BottomWall = Walls.Single(w => w.TopCell == cellAddress),
+                    VictoryCondition = new(new())
                 };
+
                 cell.Clicked += CellClicked;
+                 
+                if(CellAddress.Player1VictoryCells.Contains(new(i,j)))
+                    cell.VictoryCondition.PlayerColors.Add(ColorHelper.Player1Color);
+                if(CellAddress.Player2VictoryCells.Contains(new(i,j)))
+                    cell.VictoryCondition.PlayerColors.Add(ColorHelper.Player2Color);
+
                 Cells.Add(cellAddress, cell);
             }
         }

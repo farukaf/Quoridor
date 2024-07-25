@@ -21,3 +21,14 @@ div {
     background: rgba(0,0,0,0.4);
     cursor: pointer;
 }
+
+.victory-block {
+    width: 100%;
+    height: 0.5rem;
+}
+
+.victory { 
+    margin: 0.2rem;
+    width: 0.5rem;
+    height: 100%; 
+}

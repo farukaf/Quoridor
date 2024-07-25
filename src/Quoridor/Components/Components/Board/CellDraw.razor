@@ -17,6 +17,15 @@
 }
 
 <div class="text-center cell" @onclick="() => CellClicked()">
+    @if (Cell.VictoryCondition.PlayerColors.Any())
+    {
+        <div class="victory-block">
+            @foreach (var color in Cell.VictoryCondition.PlayerColors)
+            {
+                <div class="victory" style="background-color: @ColorHelper.GetHex(color)"></div>
+            }
+        </div>
+    }
     @if (Cell.State == CellState.AvaliableMove)
     {
         <div class="avaliable"></div>

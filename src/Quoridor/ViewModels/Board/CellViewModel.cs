@@ -9,7 +9,8 @@ public record CellViewModel : GridElementViewModel
     public WallViewModel RightWall { get; set; } = default!;
     public WallViewModel BottomWall { get; set; } = default!;
     public CellAddress Address { get; set; }
-    public CellState State { get; set; }
+    public CellState State { get; set; } 
+    public VictoryCondition VictoryCondition { get; set; } = default!;
 
     public override string CssClass()
     {

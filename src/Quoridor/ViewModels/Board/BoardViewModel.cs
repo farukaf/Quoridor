@@ -119,9 +119,16 @@ public record BoardViewModel : IDisposable
                 (corner.CornerAddress.X == clickedCorner.CornerAddress.X && corner.CornerAddress.Y == clickedCorner.CornerAddress.Y - 2) ||
                 (corner.CornerAddress.Y == clickedCorner.CornerAddress.Y && corner.CornerAddress.X == clickedCorner.CornerAddress.X - 2))
             {
-                (_, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, corner);
+                (var corners, var wall1, var wall2) = GetWallsFromCorners(clickedCorner, corner);
+
                 if (wall1.IsPlaced || wall2.IsPlaced)
                     continue;
+
+                //If performace is a issue, look this first :D
+                var willBlockPlayer = WillBlockPlayer(clickedCorner, corner, corners, wall1, wall2);
+                if (willBlockPlayer)
+                    continue;
+
                 corner.State = CornerState.Avaliable;
                 avaliable++;
                 continue;
@@ -137,6 +144,77 @@ public record BoardViewModel : IDisposable
         return Task.CompletedTask;
     }
 
+    private bool WillBlockPlayer(CornerViewModel clickedCorner, CornerViewModel corner, IEnumerable<CornerViewModel> corners, WallViewModel wall1, WallViewModel wall2)
+    {
+        // Simulate placing the walls
+        wall1.IsPlaced = true;
+        wall2.IsPlaced = true;
+
+        // Check if either player is blocked
+        bool player1Blocked = IsPlayerBlocked(Room.Player1);
+        bool player2Blocked = IsPlayerBlocked(Room.Player2);
+
+        // Revert the simulated wall placements
+        wall1.IsPlaced = false;
+        wall2.IsPlaced = false;
+
+        return player1Blocked || player2Blocked;
+    }
+
+    Queue<CellAddress> _isPlayerBlockedQueue = new Queue<CellAddress>();
+    HashSet<CellAddress> _isPlayerBlockedVisited = new HashSet<CellAddress>();
+
+    private bool IsPlayerBlocked(PlayerViewModel? player)
+    {
+        if (player == null)
+            return false;
+
+        _isPlayerBlockedVisited.Clear();
+        _isPlayerBlockedQueue.Clear();
+        _isPlayerBlockedQueue.Enqueue(player.Address);
+
+        while (_isPlayerBlockedQueue.Count > 0)
+        {
+            var current = _isPlayerBlockedQueue.Dequeue();
+            if (_isPlayerBlockedVisited.Contains(current))
+                continue;
+
+            _isPlayerBlockedVisited.Add(current);
+
+            if (Room.ValidateVictory(player, current))
+                return false;
+
+            var neighbors = GetNeighbors(current);
+            foreach (var neighbor in neighbors)
+            {
+                if (!_isPlayerBlockedVisited.Contains(neighbor))
+                    _isPlayerBlockedQueue.Enqueue(neighbor);
+            }
+        }
+
+        return true;
+    }
+
+    private IEnumerable<CellAddress> GetNeighbors(CellAddress address)
+    {
+        var neighbors = new List<CellAddress>();
+
+        var cell = GetCell(address);
+        if (cell is null)
+            return neighbors;
+
+        if (!cell.TopWall.IsPlaced)
+            neighbors.Add(new CellAddress { Row = (short)(address.Row - 1), Column = address.Column });
+        if (!cell.BottomWall.IsPlaced)
+            neighbors.Add(new CellAddress { Row = (short)(address.Row + 1), Column = address.Column });
+        if (!cell.LeftWall.IsPlaced)
+            neighbors.Add(new CellAddress { Row = address.Row, Column = (short)(address.Column - 1) });
+        if (!cell.RightWall.IsPlaced)
+            neighbors.Add(new CellAddress { Row = address.Row, Column = (short)(address.Column + 1) });
+
+        return neighbors;
+    }
+
     private async Task AvaliableCornerClicked(CornerViewModel clickedCorner)
     {
         var selectedCorner = Corners.Values.First(c => c.State == CornerState.Selected);
@@ -149,7 +227,7 @@ public record BoardViewModel : IDisposable
         //Reset the corners
         foreach (var corner in Corners.Values)
             corner.State = CornerState.Enabled;
-       
+
 
         //WallPlacedEvent
         if (WallPlacedEvent is not null)
@@ -484,6 +562,8 @@ public record BoardViewModel : IDisposable
 
     public void Dispose()
     {
+        //FYI: TrimExcess is a good practice to free memory, but tends to consume cpu instead...
+        //Here we are prioritizing memory usage over cpu usage
         Walls.Clear();
         Walls.TrimExcess();
         GridElements.Clear();
@@ -492,6 +572,10 @@ public record BoardViewModel : IDisposable
         Cells.TrimExcess();
         Corners.Clear();
         Corners.TrimExcess();
+        _isPlayerBlockedQueue.Clear();
+        _isPlayerBlockedQueue.TrimExcess();
+        _isPlayerBlockedVisited.Clear();
+        _isPlayerBlockedVisited.TrimExcess();
     }
 
     public void Reset()
@@ -499,8 +583,8 @@ public record BoardViewModel : IDisposable
         //Reset the corners
         foreach (var corner in Corners.Values)
             corner.State = CornerState.Enabled;
-        
-        foreach(var cell in Cells.Values)
+
+        foreach (var cell in Cells.Values)
             cell.State = CellState.Clear;
 
         foreach (var wall in Walls)

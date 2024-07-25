@@ -164,7 +164,7 @@ public record RoomViewModel : IDisposable
         Board.CurrentPlayer = Player1;
     }
 
-    private bool ValidateVictory(PlayerViewModel player, CellAddress newAddress)
+    public bool ValidateVictory(PlayerViewModel player, CellAddress newAddress)
     {
         var cell = Board.GetCell(newAddress);
         return cell is not null && cell.VictoryCondition.PlayerColors.Contains(player.Color);        

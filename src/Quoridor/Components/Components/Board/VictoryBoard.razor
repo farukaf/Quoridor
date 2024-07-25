@@ -19,7 +19,7 @@
         var timezoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timezone);
         var formatedDate = TimeZoneInfo.ConvertTime(date, timezoneInfo);
 
-        return formatedDate.ToString("ddd dd HH:mm");
+        return formatedDate.ToString("ddd dd MMM HH:mm");
     }
 }
 

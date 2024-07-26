@@ -19,5 +19,6 @@ No aditional dependencies are necessary.
   - [ ] Stress Test (discover our limits)
 - [ ] Support horizontal scalling with backlane (if so, must be optional)?
 - [ ] Custom styling
-- [ ] Internationalization/Localization 
+- [ ] Internationalization/Localization
+- [ ] Bot
    

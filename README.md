@@ -7,6 +7,8 @@ No aditional dependencies are necessary.
 
 ## Public docker images
 
+[Docker Hub](https://hub.docker.com/repository/docker/farukaf/quoridor/general)
+
 ## To-Do List
 
 - [x] CI/CD uploading to Docker Hub Repository.

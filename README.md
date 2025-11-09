@@ -7,7 +7,7 @@ No aditional dependencies are necessary.
 
 ## Public docker images
 
-[Docker Hub](https://hub.docker.com/repository/docker/farukaf/quoridor/general)
+[Docker Hub](https://hub.docker.com/r/farukaf/quoridor/tags)
 
 ## To-Do List
 
